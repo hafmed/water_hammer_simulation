@@ -1,6 +1,6 @@
 #include <windows.h>
 
-IDI_ICON1	ICON	DISCARDABLE	"C:\\Users\\hafme\\Desktop\\2020_2021_Mint20_Win10\\For_Published_ver_1.9.0(1-9-2020)\\water-hammer-simulation-master\\src\\icons\\water-hammer-simulation.ico"
+IDI_ICON1	ICON	DISCARDABLE	"C:\\Users\\hafme\\Documents\\GitHub\\water_hammer_simulation\\src\\icons\\water-hammer-simulation.ico"
 
 VS_VERSION_INFO VERSIONINFO
 	FILEVERSION 1,9,0,0

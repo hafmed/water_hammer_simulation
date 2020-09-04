@@ -1,4 +1,4 @@
-// Metho_Approxi le 15-2-2017 Marche bien 17-7-2020
+// Metho_Approxi le 15-2-2017 / 5-9-2020
 
 #include "water-hammer-simulation.h"
 #include "ui_water-hammer-simulation.h"

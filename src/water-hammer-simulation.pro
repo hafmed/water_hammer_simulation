@@ -1,5 +1,5 @@
 #-------------------------------------------------
-# HAF 5-1-2018 , 23-7-2020
+# HAF 5-1-2018 , 5-9-2020
 # on Qt 5.9.5 GCC 7.3.0; 64 bit Qt Creator 4.5.2 Ubuntu 18.4
 # sudo apt install g++
 # sudo apt install cmake
