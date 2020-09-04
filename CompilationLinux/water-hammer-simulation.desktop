@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=water-hammer-simulation
+Comment=Application to calculate Water HAMMER phenomen.
+Exec=water-hammer-simulation
+Icon=water-hammer-simulation
+Terminal=false
+Type=Application
+Categories=Science;
+Name[en_US]=water-hammer-simulation.desktop
+X-AppImage-Version=

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/water-hammer-simulation_Reservoir.png</file>
+        <file>icons/water-hammer-simulation.ico</file>
+    </qresource>
+</RCC>
