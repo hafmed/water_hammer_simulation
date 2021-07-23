@@ -1,5 +1,5 @@
 #-------------------------------------------------
-# HAF 5-1-2018 , 5-9-2020
+# HAF 5-1-2018 , 9-9-2020
 # on Qt 5.9.5 GCC 7.3.0; 64 bit Qt Creator 4.5.2 Ubuntu 18.4
 # sudo apt install g++
 # sudo apt install cmake
@@ -13,7 +13,7 @@
 
 QT       += core gui
 CONFIG += c++17
-VERSION = 1.9.0 # HAF 1-9-2020
+VERSION = 3.0.9 # HAF 1-5-2021 ; 25-7-2021
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QMAKE_CXXFLAGS += -std=c++17

@@ -1,26 +1,26 @@
 Name "water-hammer-simulation HAFIANE Mohamed"
-OutFile "water-hammer-simulation_win64_install_1.9.0.exe"
+OutFile "water-hammer-simulation_win64_install_3.0.9.exe"
 
 Icon "water-hammer-simulation.ico"
 UninstallIcon "water-hammer-simulation.ico"
 
 
-DirText "Uninstall previous version if exist and Choose directory for installing Simulation Coup de Belier (water-hammer-simulation) Ver 1.9.0 du 1-9-2020"
+DirText "Uninstall previous version if exist and Choose directory for installing Simulation Coup de Belier (water-hammer-simulation) Ver "3.0.9 du 25-7-2021"
 
 InstallDir "$PROGRAMFILES\water-hammer-simulation"
 
 Section "Install"
   SetOutPath $INSTDIR
-  File "C:\Qt\Qt5.12.0\5.12.0\mingw73_64\bin\libgcc_s_seh-1.dll"
-  File "C:\Qt\Qt5.12.0\5.12.0\mingw73_64\bin\libstdc++-6.dll"
-  File "C:\Qt\Qt5.12.0\5.12.0\mingw73_64\bin\libwinpthread-1.dll"
-  File "C:\Qt\Qt5.12.0\5.12.0\mingw73_64\bin\Qt5Core.dll"
-  File "C:\Qt\Qt5.12.0\5.12.0\mingw73_64\bin\Qt5Gui.dll"
-  File "C:\Qt\Qt5.12.0\5.12.0\mingw73_64\bin\Qt5PrintSupport.dll"
-  File "C:\Qt\Qt5.12.0\5.12.0\mingw73_64\bin\Qt5Widgets.dll"
+  File "C:\Qt6\6.1.1\mingw81_64\bin\libgcc_s_seh-1.dll"
+  File "C:\Qt6\6.1.1\mingw81_64\bin\libstdc++-6.dll"
+  File "C:\Qt6\6.1.1\mingw81_64\bin\libwinpthread-1.dll"
+  File "C:\Qt6\6.1.1\mingw81_64\bin\Qt6Core.dll"
+  File "C:\Qt6\6.1.1\mingw81_64\bin\Qt6Gui.dll"
+  File "C:\Qt6\6.1.1\mingw81_64\bin\Qt6PrintSupport.dll"
+  File "C:\Qt6\6.1.1\mingw81_64\bin\Qt6Widgets.dll"
 CreateDirectory $INSTDIR\platforms
 SetOutPath $INSTDIR\platforms
-  File "C:\Qt\Qt5.12.0\5.12.0\mingw73_64\plugins\platforms\qwindows.dll"
+  File "C:\Qt6\6.1.1\mingw81_64\plugins\platforms\qwindows.dll"
 SetOutPath $INSTDIR 
  File "..\CompilationWin\release\water-hammer-simulation.exe"
  File "water-hammer-simulation.ico"
@@ -52,10 +52,10 @@ Delete "$QUICKLAUNCH\water-hammer-simulation.lnk"
 Delete "$INSTDIR\libgcc_s_seh-1.dll"
 Delete "$INSTDIR\libstdc++-6.dll"
 Delete "$INSTDIR\libwinpthread-1.dll"
-Delete "$INSTDIR\Qt5Core.dll"
-Delete "$INSTDIR\Qt5Gui.dll"
-Delete "$INSTDIR\Qt5PrintSupport.dll"
-Delete "$INSTDIR\Qt5Widgets.dll"
+Delete "$INSTDIR\Qt6Core.dll"
+Delete "$INSTDIR\Qt6Gui.dll"
+Delete "$INSTDIR\Qt6PrintSupport.dll"
+Delete "$INSTDIR\Qt6Widgets.dll"
 Delete "$INSTDIR\platforms\qwindows.dll"
 RMDir $INSTDIR\platforms
 Delete "$INSTDIR\water-hammer-simulation.exe"
