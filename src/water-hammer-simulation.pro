@@ -13,7 +13,7 @@
 
 QT       += core gui
 CONFIG += c++17
-VERSION = 3.0.9 # HAF 1-5-2021 ; 25-7-2021
+VERSION = 3.0.15 # HAF 1-5-2021 ; 25-7-2021; 9-8-2021
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QMAKE_CXXFLAGS += -std=c++17
@@ -32,8 +32,11 @@ HEADERS  += water-hammer-simulation.h \
 
 FORMS    += water-hammer-simulation.ui
 
+TRANSLATIONS = translations/qt_en.ts
+
 RESOURCES += \
-    qtresource.qrc
+    qtresource.qrc \
+    translations.qrc
 
 win32:RC_ICONS += icons\water-hammer-simulation.ico
 

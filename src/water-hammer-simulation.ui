@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>792</width>
+    <width>808</width>
     <height>701</height>
    </rect>
   </property>
@@ -157,7 +157,7 @@
                <double>0.100000000000000</double>
               </property>
               <property name="maximum">
-               <double>36000.000000000000000</double>
+               <double>360000.000000000000000</double>
               </property>
               <property name="singleStep">
                <double>0.100000000000000</double>
@@ -331,7 +331,12 @@
                </size>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Condition de stabilité (Courant–Friedrichs–Levy) :&lt;/p&gt;&lt;p&gt;- pour MOC (Modèle simplifié) : CFL=C/(dx/dt)=1&lt;/p&gt;&lt;p&gt;- pour MOC (Modèle complet) : CFL=(C+Vo)/(dx/dt)&lt;/p&gt;&lt;p&gt;- pour Lax–Wendroff : CFL=C/(dx/dt)&lt;/p&gt;&lt;p&gt;CFL&amp;lt;1 donne &amp;quot;phénomène de diffusion de la méthode&amp;quot; ;&lt;/p&gt;&lt;p&gt;CFL&amp;gt;1 donne &amp;quot;Instabilité numérique de la méthode&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>Condition de stabilité (Courant–Friedrichs–Levy) :
+- pour MOC (Modèle simplifié) : CFL=C/(dx/dt)=1
+- pour MOC (Modèle complet) : CFL=(C+Vo)/(dx/dt)
+- pour Lax–Wendroff : CFL=C/(dx/dt)
+CFL&lt;1 donne &quot;phénomène de diffusion de la méthode&quot; ;
+CFL&gt;1 donne &quot;Instabilité numérique de la méthode&quot;.</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -806,6 +811,15 @@
              <string>Méthodes de calcul</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_9">
+             <property name="spacing">
+              <number>9</number>
+             </property>
+             <property name="topMargin">
+              <number>2</number>
+             </property>
+             <property name="bottomMargin">
+              <number>2</number>
+             </property>
              <item>
               <widget class="QRadioButton" name="radioButton_M1">
                <property name="text">

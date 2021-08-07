@@ -1,11 +1,11 @@
 Name "water-hammer-simulation HAFIANE Mohamed"
-OutFile "water-hammer-simulation_win64_install_3.0.9.exe"
+OutFile "water-hammer-simulation_win64_install_3.0.15.exe"
 
 Icon "water-hammer-simulation.ico"
 UninstallIcon "water-hammer-simulation.ico"
 
 
-DirText "Uninstall previous version if exist and Choose directory for installing Simulation Coup de Belier (water-hammer-simulation) Ver "3.0.9 du 25-7-2021"
+DirText "Uninstall previous version if exist and Choose directory for installing Simulation Coup de Belier (water-hammer-simulation) Ver "3.0.15 - 9-8-2021"
 
 InstallDir "$PROGRAMFILES\water-hammer-simulation"
 

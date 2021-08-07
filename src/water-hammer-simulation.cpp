@@ -1,4 +1,4 @@
-// Metho_Approxi le 15-2-2017 / 23-4-2021 / 25-7-2021
+// Metho_Approxi le 15-2-2017 / 23-4-2021 / 25-7-2021 / 9-8-2021
 #include "water-hammer-simulation.h"
 #include "ui_water-hammer-simulation.h"
 #include <QDebug>
@@ -20,7 +20,7 @@ water_hammer_simulation::water_hammer_simulation(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->statusBar->showMessage("HAFIANE Mohamed (2020-2021) Ver: " APP_VERSION " Linux&Windows ; email : haftemp@gmail.com ; https://sites.google.com/site/courshaf");
-    setWindowTitle("Simulation du phénomène de coup de Bélier");
+    setWindowTitle(tr("Simulation du phénomène de coup de Bélier"));
     //------------------HAF 25-7-2020----------------------------
     ui->doubleSpinBox_Tclose->setLocale(QLocale(QLocale::English, QLocale::UnitedStates));
     ui->doubleSpinBox_Tclose->setGroupSeparatorShown(false);
@@ -74,8 +74,8 @@ water_hammer_simulation::water_hammer_simulation(QWidget *parent) :
     connect(ui->pushButton_copy_table_in_Clipboard, SIGNAL(clicked()), this, SLOT(copy_table_in_Clipboard()));
     // HAF 29-04-2021
     pd.setWindowModality(Qt::ApplicationModal);
-    pd.setLabelText("Calcul en cours, Veuillez patienter!");
-    pd.setCancelButtonText("Annuler");
+    pd.setLabelText(tr("Calcul en cours, Veuillez patienter!"));
+    pd.setCancelButtonText(tr("Annuler"));
     pd.setFocus();
     pd.setAutoReset(true);
     pd.setEnabled(true);
@@ -101,7 +101,7 @@ water_hammer_simulation::~water_hammer_simulation()
 }
 void water_hammer_simulation::calculMethodeLaxWendroff()
 {
-    pd.setLabelText("Calcul en cours, Veuillez patienter!\n Méthode_Lax_Wendroff");
+    pd.setLabelText(tr("Calcul en cours, Veuillez patienter!\n Méthode_Lax_Wendroff"));
     // Entrées
     nparts=ui->spinBox_nparts->value(); //8;
     c=ui->lineEdit_C->value(); //761.96;        //Célérité  d'onde
@@ -180,7 +180,7 @@ void water_hammer_simulation::calculMethodeLaxWendroff()
 
 void water_hammer_simulation::calculMethodeCaracteristique_Complet()
 {
-    pd.setLabelText("Calcul en cours, Veuillez patienter!\n MOC_Modele_Complet");
+    pd.setLabelText(tr("Calcul en cours, Veuillez patienter!\n MOC_Modele_Complet"));
     // Entrées
     nparts=ui->spinBox_nparts->value(); //8;
     c=ui->lineEdit_C->value(); //761.96;        //Célérité  d'onde
@@ -260,7 +260,7 @@ void water_hammer_simulation::calculMethodeCaracteristique_Complet()
 
 void water_hammer_simulation::calculMethodeCaracteristique_Simplified()
 {
-    pd.setLabelText("Calcul en cours, Veuillez patienter!\n MOC_Modele_Simplified");
+    pd.setLabelText(tr("Calcul en cours, Veuillez patienter!\n MOC_Modele_Simplifié"));
     // Entrées
     nparts=ui->spinBox_nparts->value(); //8;
     c=ui->lineEdit_C->value(); //761.96;        //Célérité  d'onde
@@ -324,7 +324,7 @@ void water_hammer_simulation::remplirtableau()
 {
     if (ui->tabWidget->currentIndex()==2){
         pd.reset();
-        pd.setLabelText("Calcul en cours, Veuillez patienter!\n remplir tableau");
+        pd.setLabelText(tr("Calcul en cours, Veuillez patienter!\n remplir tableau"));
         QStringList Horizontalheadtext;
         QStringList Verticalheadtext;
         ui->tableWidget->setColumnCount(mcolones);
@@ -372,7 +372,7 @@ void water_hammer_simulation::remplirtableau()
 void water_hammer_simulation::copy_table_in_Clipboard()
 {
     pd.reset();
-    pd.setLabelText("Calcul en cours, Veuillez patienter!\n copier tableau dans presse paper");
+    pd.setLabelText(tr("Calcul en cours, Veuillez patienter!\n copier tableau dans presse paper"));
     t=0;
     x=0;
     resultatsfr0="t(s)/x(m)";
@@ -448,8 +448,8 @@ void water_hammer_simulation::checkDimVYforrecalcul()
     if (m>20000 || nparts>20000 ) {
         QMessageBox errorMessage;
         errorMessage.setFixedSize(500, 200);
-        errorMessage.critical(this, "Erreur données : Mémoire maximale allouée saturée!",
-                              "Augmenter (L ou C ou CFL)  ou diminuer (Tmax ou nparts)");
+        errorMessage.critical(this, tr("Erreur données : Mémoire maximale allouée saturée!"),
+                              tr("Augmenter (L ou C ou CFL) ou diminuer (Tmax ou nparts)"));
         errorMessage.show();
         ui->lineEdit_L->setValue(L_old);
         ui->spinBox_nparts->setValue(nparts_old);
@@ -500,7 +500,7 @@ void water_hammer_simulation::recalcul()
     c_old=ui->lineEdit_C->value();
     Cd_old=ui->doubleSpinBox_Cd->value();
 
-    ui->pushButton_StartAnimation->setText("Commencer l'animation");
+    ui->pushButton_StartAnimation->setText(tr("Commencer l'animation"));
     timer->stop();
     pd.reset();
     ui->customPlot_2->clearItems();
@@ -546,10 +546,10 @@ void water_hammer_simulation::StartAnimation()
 
         timer->start();
 
-        ui->pushButton_StartAnimation->setText("Arrêter l'animation");
+        ui->pushButton_StartAnimation->setText(tr("Arrêter l'animation"));
     }else{
         timer->stop();
-        ui->pushButton_StartAnimation->setText("Commencer l'animation");
+        ui->pushButton_StartAnimation->setText(tr("Commencer l'animation"));
     }
     ui->comboBox->setCurrentIndex(0);
     ui->horizontalSlider_k->setValue(k);
@@ -636,7 +636,7 @@ void water_hammer_simulation::plotHAF(int k)
     ui->radioButton_p->setText(minmaxp);
     //-----
     if ((k+1)*daltat>tmax){
-        ui->pushButton_StartAnimation->setText("Commencer l'animation");
+        ui->pushButton_StartAnimation->setText(tr("Commencer l'animation"));
         timer->stop();
     }
     ui->horizontalSlider_k->setMaximum(nLignes-1);
@@ -656,7 +656,7 @@ void water_hammer_simulation::plotHAF(int k)
     ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
     ui->customPlot->addGraph();
-    ui->customPlot->graph(0)->setName("Simulation water_hammer_simulation");
+    ui->customPlot->graph(0)->setName(tr("Simulation water_hammer_simulation"));
     ui->customPlot->graph(0)->setData(x, y);
     ui->customPlot->xAxis->setLabel("x/L (-)");
     ui->customPlot->xAxis->setRange(0, 1);
@@ -757,7 +757,7 @@ void water_hammer_simulation::plotHAFVanne()
     }
     ui->customPlot_2->clearItems(); //HAF 25-04-2021
     ui->customPlot_2->addGraph();
-    ui->customPlot_2->graph(0)->setName("Validation water_hammer_simulation");
+    ui->customPlot_2->graph(0)->setName(tr("Validation water_hammer_simulation"));
     ui->customPlot_2->graph(0)->setData(xx, yy);
     ui->customPlot_2->xAxis->setLabel("t/(2*L/c) (-)"); //HAF-25-7-2020
     ui->customPlot_2->xAxis->setRange(-tmax/(2*L/c)*0.1, tmax/(2*L/c)); //HAF-17-7-2020
@@ -845,7 +845,7 @@ void water_hammer_simulation::plotHAFVanne()
             }
         }
         ui->label_TempsRetour->setVisible(true);
-        ui->label_TempsRetour->setText(QString("Temps d'aller-retour de l'onde de pression (2*L/c)= %2 (s)")
+        ui->label_TempsRetour->setText(QString(tr("Temps d'aller-retour de l'onde de pression (2*L/c)=%2 (s)"))
                                        .arg(2*L/c, 0, 'f', 2));
         wavePacketText->setFont(QFont(font().family(), 10));
         wavePacketText->setRotation(-90);
@@ -894,7 +894,6 @@ void water_hammer_simulation::affichage_resultats(){
     /* Affichage */
     //    ofstream myfile;
     //    myfile.open ("returns_water_hammer_simulation.txt");
-
     //    for (i=0; i < nLignes  ; i++)
     //    {
     //        if (!timer->isActive()){
@@ -912,10 +911,5 @@ void water_hammer_simulation::affichage_resultats(){
     //        }
     //        myfile << endl;
     //    }
-
-
-
     //--
-
-
 }
