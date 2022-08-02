@@ -1,26 +1,26 @@
 Name "water-hammer-simulation HAFIANE Mohamed"
-OutFile "water-hammer-simulation_win64_install_3.0.15.exe"
+OutFile "water-hammer-simulation_Qt6_3_1_win64_install_4.3.1.exe"
 
 Icon "water-hammer-simulation.ico"
 UninstallIcon "water-hammer-simulation.ico"
 
 
-DirText "Uninstall previous version if exist and Choose directory for installing Simulation Coup de Belier (water-hammer-simulation) Ver "3.0.15 - 9-8-2021"
+DirText "Uninstall previous version if exist and Choose directory for installing Simulation Coup de Belier (water-hammer-simulation) Ver 4.3.1 Qt6.3.1 - 1-8-2022"
 
 InstallDir "$PROGRAMFILES\water-hammer-simulation"
 
 Section "Install"
   SetOutPath $INSTDIR
-  File "C:\Qt6\6.1.1\mingw81_64\bin\libgcc_s_seh-1.dll"
-  File "C:\Qt6\6.1.1\mingw81_64\bin\libstdc++-6.dll"
-  File "C:\Qt6\6.1.1\mingw81_64\bin\libwinpthread-1.dll"
-  File "C:\Qt6\6.1.1\mingw81_64\bin\Qt6Core.dll"
-  File "C:\Qt6\6.1.1\mingw81_64\bin\Qt6Gui.dll"
-  File "C:\Qt6\6.1.1\mingw81_64\bin\Qt6PrintSupport.dll"
-  File "C:\Qt6\6.1.1\mingw81_64\bin\Qt6Widgets.dll"
+  File "C:\Qt\6.3.1\mingw_64\bin\libgcc_s_seh-1.dll"
+  File "C:\Qt\6.3.1\mingw_64\bin\libstdc++-6.dll"
+  File "C:\Qt\6.3.1\mingw_64\bin\libwinpthread-1.dll"
+  File "C:\Qt\6.3.1\mingw_64\bin\Qt6Core.dll"
+  File "C:\Qt\6.3.1\mingw_64\bin\Qt6Gui.dll"
+  File "C:\Qt\6.3.1\mingw_64\bin\Qt6PrintSupport.dll"
+  File "C:\Qt\6.3.1\mingw_64\bin\Qt6Widgets.dll"
 CreateDirectory $INSTDIR\platforms
 SetOutPath $INSTDIR\platforms
-  File "C:\Qt6\6.1.1\mingw81_64\plugins\platforms\qwindows.dll"
+  File "C:\Qt\6.3.1\mingw_64\plugins\platforms\qwindows.dll"
 SetOutPath $INSTDIR 
  File "..\CompilationWin\release\water-hammer-simulation.exe"
  File "water-hammer-simulation.ico"

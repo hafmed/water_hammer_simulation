@@ -1,7 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/water-hammer-simulation_Reservoir.png</file>
         <file>icons/water-hammer-simulation.ico</file>
         <file>icons/log_universite_SAIDA.png</file>
+        <file>icons/water-hammer-simulation_Reservoir_fr.png</file>
+        <file>icons/water-hammer-simulation_Reservoir_ang.png</file>
     </qresource>
 </RCC>

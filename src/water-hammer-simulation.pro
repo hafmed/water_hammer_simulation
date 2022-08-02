@@ -13,22 +13,31 @@
 
 QT       += core gui
 CONFIG += c++17
-VERSION = 3.0.15 # HAF 1-5-2021 ; 25-7-2021; 9-8-2021
+VERSION = 4.3.1 # HAF 1-5-2021 ; 25-7-2021; 9-8-2021; 15-5-2022; 9-7-2022; 29-7-2022
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QMAKE_CXXFLAGS += -std=c++17
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
+android:DISTFILES += \
+android-sources/AndroidManifest.xml \
+android-sources/build.gradle
+
+ANDROID_VERSION_CODE = 032431
+
+android:ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android-sources
+
 TARGET = water-hammer-simulation
 TEMPLATE = app
 
 SOURCES += main.cpp\
-        water-hammer-simulation.cpp \
-    qcustomplot/qcustomplot.cpp
+            water-hammer-simulation.cpp \
+            qcustomplot/qcustomplot.cpp
 
 HEADERS  += water-hammer-simulation.h \
-    qcustomplot/qcustomplot.h
+            constants \
+            qcustomplot/qcustomplot.h
 
 FORMS    += water-hammer-simulation.ui
 
@@ -39,4 +48,14 @@ RESOURCES += \
     translations.qrc
 
 win32:RC_ICONS += icons\water-hammer-simulation.ico
+
+DISTFILES += \
+    android-sources/AndroidManifest.xml \
+    android-sources/build.gradle \
+    android-sources/res/drawable-hdpi/icon.png \
+    android-sources/res/drawable-ldpi/icon.png \
+    android-sources/res/drawable-mdpi/icon.png \
+    android-sources/res/drawable-xhdpi/icon.png \
+    android-sources/res/drawable-xxhdpi/icon.png \
+    android-sources/res/drawable-xxxhdpi/icon.png
 

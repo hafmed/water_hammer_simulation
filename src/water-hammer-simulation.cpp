@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
-
+#include <constants.h>
 using namespace std;
 #include <iomanip>
 
@@ -19,7 +19,7 @@ water_hammer_simulation::water_hammer_simulation(QWidget *parent) :
     ui(new Ui::water_hammer_simulation)
 {
     ui->setupUi(this);
-    ui->statusBar->showMessage("HAFIANE Mohamed (2020-2021) Ver: " APP_VERSION " Linux&Windows ; email : haftemp@gmail.com ; https://sites.google.com/site/courshaf");
+    //ui->statusBar->showMessage("HAFIANE Mohamed (2021-2022) Ver: " APP_VERSION " Linux&Windows ; email : haftemp@gmail.com ; https://sites.google.com/site/courshaf");
     setWindowTitle(tr("Simulation du phénomène de coup de Bélier"));
     //------------------HAF 25-7-2020----------------------------
     ui->doubleSpinBox_Tclose->setLocale(QLocale(QLocale::English, QLocale::UnitedStates));
@@ -52,7 +52,7 @@ water_hammer_simulation::water_hammer_simulation(QWidget *parent) :
     connect(ui->radioButton_V, SIGNAL(clicked()), this, SLOT(intialplotHAF()));
     connect(ui->radioButton_p, SIGNAL(clicked()), this, SLOT(intialplotHAF()));
 
-    connect(ui->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(plotHAFVanne()));
+    connect(ui->comboBox_Anim_Valid, SIGNAL(currentIndexChanged(int)), this, SLOT(plotHAFVanne()));
     connect(ui->radioButton_H, SIGNAL(clicked()), this, SLOT(plotHAFVanne()));
     connect(ui->radioButton_V, SIGNAL(clicked()), this, SLOT(plotHAFVanne()));
     connect(ui->radioButton_p, SIGNAL(clicked()), this, SLOT(plotHAFVanne()));
@@ -87,12 +87,28 @@ water_hammer_simulation::water_hammer_simulation(QWidget *parent) :
 
     connect(ui->pushButton_Calculer, SIGNAL(clicked()), this, SLOT(recalcul()));
 
-    connect(ui->radioButton_M1, SIGNAL(clicked()), this, SLOT(recalcul()));
-    connect(ui->radioButton_M2, SIGNAL(clicked()), this, SLOT(recalcul()));
-    connect(ui->radioButton_M3, SIGNAL(clicked()), this, SLOT(recalcul()));
+    connect(ui->comboBox_Choisemethod, SIGNAL(currentIndexChanged(int)), this, SLOT(recalcul()));
+
     ui->checkBox_ViteseAnimRapide->setChecked(true);
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabWidgetcurrentIndexChanged(int)));
     /////------------------
+    connect(ui->pushButton_about,SIGNAL(clicked()), this, SLOT(about()));
+    connect(ui->pushButton_help,SIGNAL(clicked()), this, SLOT(help()));
+    /////------------------
+#if defined(Q_OS_ANDROID)
+    ui->verticalSlider_Zoom->show();
+#else
+    ui->verticalSlider_Zoom->hide();
+#endif
+    /////---------------
+    QString locale = QString(QLocale::system().name()).left(2);
+    if (locale.length() < 2) locale = "en";
+    if (locale!="fr")
+    {
+        ui->label_fig_config->setPixmap(QPixmap(QString::fromUtf8(":/icons/water-hammer-simulation_Reservoir_ang.png")));
+    }
+    /////--------------
+
 
 }
 water_hammer_simulation::~water_hammer_simulation()
@@ -193,10 +209,10 @@ void water_hammer_simulation::calculMethodeCaracteristique_Complet()
     tclose=ui->doubleSpinBox_Tclose->value(); //10;        //Temps de fermeture de la vanne
     Z1=ui->lineEdit_Z1->value();
     Z2=ui->lineEdit_Z2->value();
-    theta=(Z2-Z1)/L;
     dZ=(Z2-Z1)/nparts;
     Cd=ui->doubleSpinBox_Cd->value();
     dx=L/nparts;
+    theta=dZ/dx;
     daltat=Cd*dx/(c+v0);
     // DELT=(DELL/(A+VZERO))/4; % (DT est 75% de la normale) pour voir phénomène de diffusion de la méthode ...
     // DELT=(DELL/(A+VZERO))/0.9; % (DT 110% de la normale) pour voir phénomène d'instabilité numérique de la
@@ -210,7 +226,7 @@ void water_hammer_simulation::calculMethodeCaracteristique_Complet()
     for (j=0;j<=nparts;j++)
     {
         v[0][j]=v0;
-        h[0][j]=h0-j*f*v0*v0*dx/(2*g*d);
+        h[0][j]=h0+Z1-j*f*v0*v0*dx/(2*g*d);
     }
     // ----
     if (!timer->isActive()){
@@ -224,11 +240,11 @@ void water_hammer_simulation::calculMethodeCaracteristique_Complet()
             if(pd.wasCanceled()){break; }
         }
 
-        h[i][0]=h0;
+        h[i][0]=h0+Z1;
 
         VR2=v[i-1][0]+c*daltat/dx*(v[i-1][1]-v[i-1][0]);
         HR2=h[i-1][0]+daltat/dx*(h[i-1][1]-h[i-1][0])*(c-VR2);
-        v[i][0]=VR2+g/c*(h0-HR2)-g/c*daltat*VR2*sin(theta)-(f*daltat)/(2*d)*VR2*fabs(VR2);
+        v[i][0]=VR2+g/c*(h[i][0]-HR2)-g/c*daltat*VR2*sin(theta)-(f*daltat)/(2*d)*VR2*fabs(VR2);
 
 
         for (j=1;j<=nparts-1;j++)
@@ -238,7 +254,7 @@ void water_hammer_simulation::calculMethodeCaracteristique_Complet()
             HL=h[i-1][j]+daltat/dx*(h[i-1][j-1]-h[i-1][j])*(c+VL);
             HR=h[i-1][j]+daltat/dx*(h[i-1][j+1]-h[i-1][j])*(c-VR);
             v[i][j]=0.5*((VL+VR)+g/c*(HL-HR)+g/c*daltat*(VL-VR)*sin(theta)-(f*daltat)/(2*d)*(VL*fabs(VL)+VR*fabs(VR)));
-            h[i][j]=0.5*(c/g*(VL-VR)+(HL+HR)+g/c*daltat*(HL-HR)*sin(theta)-c/g*(f*daltat)/(2*d)*(VL*fabs(VL)-VR*fabs(VR)));
+            h[i][j]=0.5*(c/g*(VL-VR)+(HL+HR)+daltat*(VL+VR)*sin(theta)-c/g*(f*daltat)/(2*d)*(VL*fabs(VL)-VR*fabs(VR)));
         }
 
         if (t>=tclose)
@@ -251,7 +267,7 @@ void water_hammer_simulation::calculMethodeCaracteristique_Complet()
         }
 
         VLNPARTS=v[i][nparts]+c*daltat/dx*(v[i-1][nparts-1]-v[i][nparts]);
-        HLNPARTS=h[i-1][nparts]+daltat/dx*(h[i-1][nparts-1]-h[i-1][nparts])*(c+v[i][nparts]);
+        HLNPARTS=h[i-1][nparts]+daltat/dx*(h[i-1][nparts-1]-h[i-1][nparts])*(c+VLNPARTS);
         h[i][nparts]=HLNPARTS+c/g*(VLNPARTS-v[i][nparts]-(f*daltat)/(2*d)*(VLNPARTS*fabs(VLNPARTS)))-VLNPARTS*daltat*sin(theta);
 
         t=t+daltat;
@@ -271,6 +287,10 @@ void water_hammer_simulation::calculMethodeCaracteristique_Simplified()
     h0=ui->lineEdit_Ho->value(); //218.07;       //La hauteur d'eau dans le réservoir
     tmax=ui->doubleSpinBox_tempsSimulation->value(); //20        //Temps total de simulation
     tclose=ui->doubleSpinBox_Tclose->value(); //10;        //Temps de fermeture de la vanne
+    Z1=0;      //ui->lineEdit_Z1->value();
+    Z2=0;      //ui->lineEdit_Z2->value();
+    // theta=(Z2-Z1)/L;
+    dZ=(Z2-Z1)/nparts;
     dx=L/nparts;
     daltat=dx/c;
     m=int(tmax/daltat);
@@ -323,24 +343,19 @@ void water_hammer_simulation::calculMethodeCaracteristique_Simplified()
 void water_hammer_simulation::remplirtableau()
 {
     if (ui->tabWidget->currentIndex()==2){
-        pd.reset();
-        pd.setLabelText(tr("Calcul en cours, Veuillez patienter!\n remplir tableau"));
         QStringList Horizontalheadtext;
         QStringList Verticalheadtext;
         ui->tableWidget->setColumnCount(mcolones);
         ui->tableWidget->setRowCount(nLignes);
-        if (!timer->isActive()){
-            pd.setRange(0,nLignes);
-        }
 
         t=0;
         x=0;
         for (i=0; i < nLignes  ; i++)
         {
-            if (!timer->isActive()){
-                pd.setValue(i);
-                if(pd.wasCanceled()){break; }
-            }
+            // if (!timer->isActive()){
+            pd.setValue(i);
+            if(pd.wasCanceled()){break; }
+            //}
             Horizontalheadtext+="x="+QString::number(x)+" (m)";
             x+=dx;
             for (j=0; j < mcolones ; j++){
@@ -357,7 +372,7 @@ void water_hammer_simulation::remplirtableau()
                 pd.setValue(i);
                 if(pd.wasCanceled()){break; }
             }
-            for (j=0; j < mcolones ; j++)
+            for (j=0; j < mcolones ; j++){
                 if (ui->radioButton_H->isChecked()){
                     ui->tableWidget->setItem(i,j,new QTableWidgetItem(tr("%1").arg(h[i][j])));
                 }else if(ui->radioButton_V->isChecked()){
@@ -365,9 +380,12 @@ void water_hammer_simulation::remplirtableau()
                 }else if(ui->radioButton_p->isChecked()){
                     ui->tableWidget->setItem(i,j,new QTableWidgetItem(tr("%1").arg(p[i][j])));
                 }
+            }
         }
+        //cout<<"pd close="<<endl;
         pd.close();
     }
+
 }
 void water_hammer_simulation::copy_table_in_Clipboard()
 {
@@ -410,6 +428,10 @@ void water_hammer_simulation::copy_table_in_Clipboard()
 void water_hammer_simulation::tabWidgetcurrentIndexChanged(int i)
 {
     if (i==2){
+        pd.reset();
+        pd.setLabelText(tr("Calcul en cours, Veuillez patienter!\n remplir tableau"));
+        pd.setRange(0,nLignes-1);
+
         remplirtableau();
     }
 }
@@ -425,16 +447,16 @@ void water_hammer_simulation::checkDimVYforrecalcul()
     Cd=ui->doubleSpinBox_Cd->value();
     dx=L/nparts;
 
-    if (ui->radioButton_M1->isChecked()){
+    if (ui->comboBox_Choisemethod->currentIndex()==0){
         daltat=dx/c;
-    }else if(ui->radioButton_M2->isChecked()){
+    }else if(ui->comboBox_Choisemethod->currentIndex()==1){
         daltat=Cd*dx/(c+v0);
-    }else if(ui->radioButton_M3->isChecked()){
+    }else if(ui->comboBox_Choisemethod->currentIndex()==2){
         daltat=Cd*dx/c;
     }
 
     m=int(tmax/daltat);
-    QString minmaxh;
+
     if (ui->radioButton_H->isChecked()){
         minmaxh="H";
     }else if(ui->radioButton_V->isChecked()){
@@ -445,7 +467,7 @@ void water_hammer_simulation::checkDimVYforrecalcul()
     minmaxh=minmaxh+ "("+QString::number(m)+" , "+QString::number(nparts+1)+")";
     ui->label_dimensionTab->setText(minmaxh);
     //cout<<"m="<<endl;
-    if (m>20000 || nparts>20000 ) {
+    if (m>int(array_size) || nparts>int(array_size) ) {
         QMessageBox errorMessage;
         errorMessage.setFixedSize(500, 200);
         errorMessage.critical(this, tr("Erreur données : Mémoire maximale allouée saturée!"),
@@ -465,7 +487,8 @@ void water_hammer_simulation::checkDimVYforrecalcul()
 
 void water_hammer_simulation::recalcul()
 {
-    if (ui->radioButton_M1->isChecked()){
+    int index=ui->comboBox_Choisemethod->currentIndex();
+    if (index==0){
         ui->doubleSpinBox_Cd->hide();
         ui->label_Cd->hide();
         ui->lineEdit_Z1->hide();
@@ -474,7 +497,7 @@ void water_hammer_simulation::recalcul()
         ui->label_uZ1->hide();
         ui->label_Z2->hide();
         ui->label_uZ2->hide();
-    }else if(ui->radioButton_M2->isChecked()){
+    }else if(index==1){
         ui->doubleSpinBox_Cd->show();
         ui->label_Cd->show();
         ui->lineEdit_Z1->show();
@@ -483,7 +506,7 @@ void water_hammer_simulation::recalcul()
         ui->label_uZ1->show();
         ui->label_Z2->show();
         ui->label_uZ2->show();
-    }else if(ui->radioButton_M3->isChecked()){
+    }else if(index==2){
         ui->doubleSpinBox_Cd->show();
         ui->label_Cd->show();
         ui->lineEdit_Z1->hide();
@@ -504,16 +527,18 @@ void water_hammer_simulation::recalcul()
     timer->stop();
     pd.reset();
     ui->customPlot_2->clearItems();
-    if (ui->radioButton_M1->isChecked()){
+    if (index==0){
         calculMethodeCaracteristique_Simplified();
-    }else if(ui->radioButton_M2->isChecked()){
+    }else if(index==1){
         calculMethodeCaracteristique_Complet();
-    }else if(ui->radioButton_M3->isChecked()){
+    }else if(index==2){
         calculMethodeLaxWendroff();
     }
     plotHAF(0);
     plotHAFVanne();
     affichage_resultats();
+
+    ui->verticalSlider_Zoom->setValue(0);
 }
 void water_hammer_simulation::changeintervalTimeAnimation()
 {
@@ -551,7 +576,7 @@ void water_hammer_simulation::StartAnimation()
         timer->stop();
         ui->pushButton_StartAnimation->setText(tr("Commencer l'animation"));
     }
-    ui->comboBox->setCurrentIndex(0);
+    ui->comboBox_Anim_Valid->setCurrentIndex(0);
     ui->horizontalSlider_k->setValue(k);
 }
 void water_hammer_simulation::plotHAFTime()
@@ -569,7 +594,48 @@ void water_hammer_simulation::intialplotHAF()
     ui->horizontalSlider_k->setValue(0);
     checkDimVYforrecalcul();
     affichage_resultats();
-    remplirtableau();
+    tabWidgetcurrentIndexChanged(2);
+}
+void water_hammer_simulation::validationVanne()
+{
+    // Détermination Max H Vanne
+    double highHvanne;
+    highHvanne=h[0][mcolones-1];
+    for(i=1;i<nLignes ;i++)
+    {
+        if(h[i][mcolones-1]>highHvanne){
+            highHvanne=h[i][mcolones-1];
+        }
+    }
+    /////cout<<"highHvanne="<<highHvanne<<endl;
+    QString temptext;
+
+    if (tclose>2*L/c){
+        if (ui->radioButton_H->isChecked()){
+            temptext="DH(Theo)="+QString::number((1000*2*L*v0)/(1000*g*tclose));
+            temptext=temptext+" ; DH(Num)="+QString::number(abs(highHvanne-h[0][nparts]))+" ; E="+
+                    QString::number((abs(highHvanne-h[0][nparts])-((1000*2*L*v0)/(1000*g*tclose)))/((1000*2*L*v0)/(1000*g*tclose))*100,'f',2)+
+                    "%";
+        }else{
+            temptext="DP(Theo)="+QString::number((1000*2*L*v0)/(1000*tclose));//en kPa
+            temptext=temptext+" ; DP(Num)="+QString::number(abs((highHvanne-h[0][nparts])*g))+" ; E="+
+                    QString::number((abs((highHvanne-h[0][nparts])*g)-((1000*2*L*v0)/(1000*tclose)))/((1000*2*L*v0)/(1000*tclose))*100,'f',2)+
+                    "%";
+        }
+    }else{
+        if (ui->radioButton_H->isChecked()){
+            temptext="DH(Theo)="+QString::number((1000*c*v0)/(1000*g));
+            temptext=temptext+" ; DH(Num)="+QString::number(abs(highHvanne-h[0][nparts]))+" ; E="+
+                    QString::number((abs(highHvanne-h[0][nparts])-((1000*c*v0)/(1000*g)))/((1000*c*v0)/(1000*g))*100,'f',2)+
+                    "%";
+        }else{
+            temptext="DP(Theo)="+QString::number((1000*c*v0)/(1000));//en kPa
+            temptext=temptext+" ; DP(Num)="+QString::number(abs((highHvanne-h[0][nparts])*g))+" ; E="+
+                    QString::number((abs((highHvanne-h[0][nparts])*g)-((1000*c*v0)/(1000)))/((1000*c*v0)/(1000))*100,'f',2)+
+                    "%";
+        }
+    }
+    ui->label_DPtheo_DPnum->setText(temptext);
 }
 void water_hammer_simulation::plotHAF(int k)
 {
@@ -602,8 +668,8 @@ void water_hammer_simulation::plotHAF(int k)
             }
         }
     }
-    QString minmaxh= "H, min="+QString::number(lowH)+" m"+ ", max="+QString::number(highH)+" m";
-    ui->radioButton_H->setText(minmaxh);
+    minmaxh= "H, min="+QString::number(lowH)+" m"+ ", max="+QString::number(highH)+" m";
+    //ui->radioButton_H->setText(minmaxh);
     highV=v[0][0];
     lowV=v[0][0];
     for(i=0;i<nLignes ;++i)
@@ -616,10 +682,10 @@ void water_hammer_simulation::plotHAF(int k)
                 if(v[i][j]<lowV)
                     lowV=v[i][j];
         }
-    QString minmaxv= "V, min="+QString::number(lowV)+" m/s"+ ", max="+QString::number(highV)+" m/s";
-    ui->radioButton_V->setText(minmaxv);
+    minmaxv= "V, min="+QString::number(lowV)+" m/s"+ ", max="+QString::number(highV)+" m/s";
+    //ui->radioButton_V->setText(minmaxv);
+    // ui->statusBar->showMessage(minmaxv);
     //haf 25-4-2021
-    double highp,lowp;
     highp=p[0][0];
     lowp=p[0][0];
     for(i=0;i<nLignes ;++i){
@@ -632,8 +698,9 @@ void water_hammer_simulation::plotHAF(int k)
                     lowp=p[i][j];
         }
     }
-    QString minmaxp= "P=rol*g*(H-z), min="+QString::number(lowp)+" kPa"+ ", max="+QString::number(highp)+" kPa";
-    ui->radioButton_p->setText(minmaxp);
+    minmaxp= "P=rol*g*(H-z), min="+QString::number(lowp)+" kPa"+ ", max="+QString::number(highp)+" kPa";
+    // ui->radioButton_p->setText(minmaxp);
+    //   ui->statusBar->showMessage(minmaxp);
     //-----
     if ((k+1)*daltat>tmax){
         ui->pushButton_StartAnimation->setText(tr("Commencer l'animation"));
@@ -662,20 +729,23 @@ void water_hammer_simulation::plotHAF(int k)
     ui->customPlot->xAxis->setRange(0, 1);
     if (ui->radioButton_H->isChecked()){
         ui->customPlot->yAxis->setLabel("H (m)");
-        ui->customPlot->yAxis->setRange(lowH-0.15*fabs(lowH), highH+0.15*fabs(highH));
+        ui->customPlot->yAxis->setRange(lowH, highH);
+        ui->statusBar->showMessage(minmaxh);
     }else if(ui->radioButton_V->isChecked()){
         ui->customPlot->yAxis->setLabel("V (m/s)");
-        ui->customPlot->yAxis->setRange(lowV-0.15*fabs(lowV), highV+0.15*fabs(highV));
+        ui->customPlot->yAxis->setRange(lowV, highV);
+        ui->statusBar->showMessage(minmaxv);
     }else if(ui->radioButton_p->isChecked()){
         ui->customPlot->yAxis->setLabel("P (kPa)");
-        ui->customPlot->yAxis->setRange(lowp-0.15*fabs(lowp), highp+0.15*fabs(highp));
+        ui->customPlot->yAxis->setRange(lowp, highp);
+        ui->statusBar->showMessage(minmaxp);
     }
 
     ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, Qt::red, Qt::white, 7));
     ui->customPlot->axisRect()->setupFullAxesBox();
     ui->customPlot->legend->setVisible(false);
 
-    QString temps= "t="+QString::number(k*daltat, 'f', 2)+" s";
+    QString temps= "t="+QString::number(k*daltat, 'f', 3)+" s";
     ui->label_tempsSimulation->setText(temps);
     ui->horizontalSlider_k->setValue(k);
 
@@ -686,11 +756,14 @@ void water_hammer_simulation::plotHAF(int k)
 
 void water_hammer_simulation::plotHAFVanne()
 {
-
+    ui->verticalSlider_Zoom->setValue(0);
+    if (ui->comboBox_Anim_Valid->currentIndex()==0){
+        ui->label_DPtheo_DPnum->hide();
+    }else{
+        ui->label_DPtheo_DPnum->show();
+    }
 
     // Détermination Max et Mini de V et H
-    double highH2,lowH2;
-    double highV2,lowV2;
     highH2=h[0][0];
     lowH2=h[0][0];
     for(i=0;i<nLignes ;i++)
@@ -706,8 +779,9 @@ void water_hammer_simulation::plotHAFVanne()
             }
         }
     }
-    QString minmaxh= "H, min="+QString::number(lowH2)+" m"+ ", max="+QString::number(highH2)+" m";
-    ui->radioButton_H->setText(minmaxh);
+    minmaxh= "H, min="+QString::number(lowH2)+" m"+ ", max="+QString::number(highH2)+" m";
+    //ui->radioButton_H->setText(minmaxh);
+    //ui->statusBar->showMessage(minmaxh);
     highV2=v[0][0];
     lowV2=v[0][0];
     for(i=0;i<nLignes ;++i){
@@ -722,10 +796,10 @@ void water_hammer_simulation::plotHAFVanne()
             }
         }
     }
-    QString minmaxv= "V, min="+QString::number(lowV2)+" m/s"+ ", max="+QString::number(highV2)+" m/s";
-    ui->radioButton_V->setText(minmaxv);
+    minmaxv= "V, min="+QString::number(lowV2)+" m/s"+ ", max="+QString::number(highV2)+" m/s";
+    //ui->radioButton_V->setText(minmaxv);
+    //ui->statusBar->showMessage(minmaxv);
     //haf 25-4-2021
-    double highp,lowp;
     highp=p[0][0];
     lowp=p[0][0];
     for(i=0;i<nLignes ;++i){
@@ -738,8 +812,9 @@ void water_hammer_simulation::plotHAFVanne()
                     lowp=p[i][j];
         }
     }
-    QString minmaxp= "P=rol*g*(H-z), min="+QString::number(lowp)+" kPa"+ ", max="+QString::number(highp)+" kPa";
-    ui->radioButton_p->setText(minmaxp);
+    minmaxp= "P=rol*g*(H-z), min="+QString::number(lowp)+" kPa"+ ", max="+QString::number(highp)+" kPa";
+    //ui->radioButton_p->setText(minmaxp);
+    //ui->statusBar->showMessage(minmaxp);
     //-----
     //------------------------------------------------
     QVector<double> xx(nLignes), yy(nLignes);
@@ -760,7 +835,7 @@ void water_hammer_simulation::plotHAFVanne()
     ui->customPlot_2->graph(0)->setName(tr("Validation water_hammer_simulation"));
     ui->customPlot_2->graph(0)->setData(xx, yy);
     ui->customPlot_2->xAxis->setLabel("t/(2*L/c) (-)"); //HAF-25-7-2020
-    ui->customPlot_2->xAxis->setRange(-tmax/(2*L/c)*0.1, tmax/(2*L/c)); //HAF-17-7-2020
+    ui->customPlot_2->xAxis->setRange(-tmax/(2*L/c)*0.25, tmax/(2*L/c)); //HAF-17-7-2020
 
     if (ui->radioButton_H->isChecked() || ui->radioButton_p->isChecked()){
         if (ui->radioButton_H->isChecked()){
@@ -828,8 +903,13 @@ void water_hammer_simulation::plotHAFVanne()
                 wavePacketText2->position->setParentAnchor(bracket2->center);
                 wavePacketText2->position->setCoords(-12.5, 0); // move 10 pixels to the top from bracket center anchor
                 wavePacketText2->setPositionAlignment(Qt::AlignBottom|Qt::AlignHCenter);
-                wavePacketText2->setText("       DH");
-                bracket2->right->setCoords(0, h[0][nparts]+(1000*c*v0)/(1000*g)+(h0-h[0][nparts]));
+                if (f!=0){
+                    wavePacketText2->setText("   hf");
+                }else{
+                    wavePacketText2->setText("");
+                }
+                /////bracket2->right->setCoords(0, h[0][nparts]+(1000*c*v0)/(1000*g)+(h0-h[0][nparts]));
+                bracket2->right->setCoords(0, h[0][nparts]+(1000*c*v0)/(1000*g)+(h[0][0]-h[0][nparts]));
             }else{
                 wavePacketText->setText("DP=Rol*C*V_0");
                 bracket->right->setCoords(0, p[0][nparts]+(1000*c*v0)/1000); //en kPa
@@ -840,8 +920,13 @@ void water_hammer_simulation::plotHAFVanne()
                 wavePacketText2->position->setParentAnchor(bracket2->center);
                 wavePacketText2->position->setCoords(-12.5, 0); // move 10 pixels to the top from bracket center anchor
                 wavePacketText2->setPositionAlignment(Qt::AlignBottom|Qt::AlignHCenter);
-                wavePacketText2->setText("DH");
-                bracket2->right->setCoords(0, (p[0][nparts]+(1000*c*v0)+((h0*1000*g)-p[0][nparts]))/1000);
+                if (f!=0){
+                    wavePacketText2->setText("hf");
+                }else{
+                    wavePacketText2->setText("");
+                }
+                bracket2->right->setCoords(0, (h[0][nparts]-Z2+(1000*c*v0)/(1000*g)+(h[0][0]-h[0][nparts]+dZ))*(g));
+                /////bracket2->right->setCoords(0, (p[0][nparts]+(1000*c*v0)+((h0*1000*g)-p[0][nparts]))/1000);
             }
         }
         ui->label_TempsRetour->setVisible(true);
@@ -866,6 +951,8 @@ void water_hammer_simulation::plotHAFVanne()
     }
     ui->customPlot_2->replot();
     pd.close();
+
+    validationVanne();
 }
 void water_hammer_simulation::affichage_resultats(){
     nparts=ui->spinBox_nparts->value();
@@ -875,11 +962,11 @@ void water_hammer_simulation::affichage_resultats(){
 
     Cd=ui->doubleSpinBox_Cd->value();
 
-    if (ui->radioButton_M1->isChecked()){
+    if (ui->comboBox_Choisemethod->currentIndex()==0){
         daltat=dx/c;
-    }else if(ui->radioButton_M2->isChecked()){
+    }else if(ui->comboBox_Choisemethod->currentIndex()==1){
         daltat=Cd*dx/(c+v0);
-    }else if(ui->radioButton_M3->isChecked()){
+    }else if(ui->comboBox_Choisemethod->currentIndex()==2){
         daltat=Cd*dx/c;
     }
 
@@ -888,7 +975,7 @@ void water_hammer_simulation::affichage_resultats(){
     mcolones=nparts+1;
     nLignes=m+1;
 
-    QString daltattext=" dt="+QString::number(daltat)+" (s)";
+    QString daltattext=" dt="+QString::number(daltat,'f',3)+" (s)";
     ui->label_dt->setText(daltattext);
 
     /* Affichage */
@@ -913,3 +1000,77 @@ void water_hammer_simulation::affichage_resultats(){
     //    }
     //--
 }
+/// for Android 10-7-2022
+/// 10-7-2022
+void water_hammer_simulation::help()
+{
+    QString link = "https://sites.google.com/site/courshaf";
+    QDesktopServices::openUrl(QUrl(link));
+}
+#if defined(Q_OS_ANDROID)
+void water_hammer_simulation::about()
+{
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle(tr("À propos"));
+    msgBox.setTextFormat(Qt::RichText);
+    QString pubabout=tr("Avec différentes méthodes numériques cette application simule le phénomène de coup de Bélier ; \n")+
+            "Ver. "+ APP_VERSION +tr(" sur Linux, Windows et Android ; \n")+
+            "("+ QString("%1").arg(BLD_DATE) +tr(") ; ")+
+            "\n HAFIANE Mohamed ; e-mail for feedback: thakir.dz@gmail.com"+
+            tr(" ou ")+
+            "mohammed.hafiane@univ-saida.dz;\n\n"+
+            tr("Page web : ")+
+            "https://sites.google.com/site/courshaf; \n\n"+
+            tr("Programmé avec C++ (mingw64) avec comme IDE (Qt Creator) et avec ")+
+            " Qt Ver. " +QT_VERSION_STR;
+    msgBox.setText(pubabout);
+    msgBox.exec();
+}
+void water_hammer_simulation::on_verticalSlider_Zoom_valueChanged(int value)
+{
+    if (value==0){
+        if (ui->radioButton_H->isChecked()){
+            ui->customPlot_2->yAxis->setRange(lowH2-0.5*fabs(lowH2), highH2+0.25*fabs(highH2));
+        }else if(ui->radioButton_V->isChecked()){
+            ui->customPlot_2->yAxis->setRange(lowV2-0.15*fabs(lowV2), highV2+0.15*fabs(highV2));
+        }else if(ui->radioButton_p->isChecked()){
+            ui->customPlot_2->yAxis->setRange(lowp-0.15*fabs(lowp), highp+0.15*fabs(highp));
+        }
+    }else{
+        if (ui->radioButton_H->isChecked()){
+            ui->customPlot_2->yAxis->setRange(lowH2, highH2-value*0.1*highH2);
+        }else if(ui->radioButton_V->isChecked()){
+            ui->customPlot_2->yAxis->setRange(lowV2, highV2-value*0.1*highV2);
+        }else if(ui->radioButton_p->isChecked()){
+            ui->customPlot_2->yAxis->setRange(lowp, highp-value*0.1*highp);
+        }
+    }
+    ui->customPlot_2->replot();
+    pd.close();
+    validationVanne();
+}
+#else
+void water_hammer_simulation::about()
+{
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle(tr("À propos"));
+    msgBox.setTextFormat(Qt::RichText);
+    QString pubabout=tr("Avec différentes méthodes numériques cette application simule le phénomène de coup de Bélier ; \n")+
+            "Ver. "+ APP_VERSION +tr(" sur Linux, Windows et Android ; \n")+
+            "("+ QString("%1").arg(BLD_DATE) +tr(") ; ")+
+            "\n HAFIANE Mohamed ; e-mail"+ tr(" pour (feedback) :")+" <a href=\"mailto:thakir.dz@gmail.com?"+
+            "subject=About%20Application%20water_hammer_simulation\">thakir.dz@gmail.com</a>"+
+            tr(" ou ")+
+            "<a href=\"mailto:mohammed.hafiane@univ-saida.dz?subject=About%20Application%20water_hammer_simulation\">mohammed.hafiane@univ-saida.dz</a>"+" ;\n\n"+
+            tr("Page web : ")+
+            "<a href='https://sites.google.com/site/courshaf'>https://sites.google.com/site/courshaf</a>"+" ;\n\n"+
+            tr("Programmé avec C++ (mingw64) avec comme IDE (Qt Creator) et avec ")+
+            " Qt Ver. " +QT_VERSION_STR;
+
+    msgBox.setText(pubabout);
+    msgBox.exec();
+}
+#endif
+
+
+

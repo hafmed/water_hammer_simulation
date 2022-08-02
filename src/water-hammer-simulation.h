@@ -28,10 +28,24 @@ public:
     int mcolones;
     int nLignes;
 
-    double (*v)[20000] = new double[20000][20000];
-    double (*h)[20000] = new double[20000][20000];
-    double (*p)[20000] = new double[20000][20000];
-    double PIPEZ[20000];
+    double highH2,lowH2;
+    double highV2,lowV2;
+
+    double highp,lowp;
+
+    //--for Qt5.9 win32
+    // double (*v)[1000] = new double[70000][1000];
+
+    std::size_t array_size=10000;
+    double (*v)[1000] = new double[array_size][1000];
+    double (*h)[1000] = new double[array_size][1000];
+    double (*p)[1000] = new double[array_size][1000];
+    double PIPEZ[1000];
+
+    //    double (*v)[1000] = new double[1000][1000];
+    //    double (*h)[1000] = new double[1000][1000];
+    //    double (*p)[1000] = new double[1000][1000];
+    //    double PIPEZ[1000];
 
     double t,x,dx,daltat;
     int    m;
@@ -68,6 +82,10 @@ public:
     double dZ;
     double theta;
     //----------------------
+    QString minmaxh;
+    QString minmaxp;
+    QString minmaxv;
+
 
 public slots:
     void plotHAF(int k);
@@ -88,6 +106,17 @@ public slots:
     void calculMethodeLaxWendroff();
     void remplirtableau();
     void tabWidgetcurrentIndexChanged(int );
+
+    // HAF 10-7-2022
+    void validationVanne();
+
+private slots:
+    void about();
+    void help();
+    #if defined(Q_OS_ANDROID)
+        void on_verticalSlider_Zoom_valueChanged(int value);
+    #endif
+
 
 private:
     Ui::water_hammer_simulation *ui;
